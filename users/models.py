@@ -5,6 +5,7 @@ from .managers import UserManager
 
 
 class User(AbstractUser):
+    username = None
     full_name = models.CharField(max_length=256, unique=True)
 
     is_staff = models.BooleanField(default=False)
