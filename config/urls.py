@@ -26,6 +26,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from config import settings
 
+from config import settings
+
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
