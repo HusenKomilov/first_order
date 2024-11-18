@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +41,8 @@ INSTALLED_APPS = [
 
     "drf_yasg",
     "rest_framework",
+    "rest_framework_simplejwt",
+    "corsheaders",
 
     "users.apps.UsersConfig",
     "cars.apps.CarsConfig",
@@ -47,6 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -56,10 +61,17 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Agar frontend React yoki Vue bo'lsa
+    "http://127.0.0.1:8001",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR,"templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -118,10 +130,16 @@ USE_TZ = True
 import os
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# Agar fayllarni yig'ib chiqaradigan bo'lsangiz:
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -132,8 +150,8 @@ AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication', 
     ),
 }
 

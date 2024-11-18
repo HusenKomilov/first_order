@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        /* Body styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Container for the form */
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+
+        /* Title */
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Alert styles */
+        .alert {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+    </style>
+    <script>
+        async function registerUser(event) {
+            event.preventDefault();
+
+            // Formadan ma'lumot olish
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+
+            // To'ldirishni tekshirish
+            if (!data.full_name || !data.password || !data.confirm_password) {
+                alert("All fields are required!");
+                return;
+            }
+
+            if (data.password !== data.confirm_password) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            const response = await fetch('/accounts/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.status === 201) {
+                window.location.href = '/accounts/login/';
+            } else {
+                alert('Error: ' + JSON.stringify(result));
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Register</h1>
+        <form onsubmit="registerUser(event)">
+            <label for="full_name">Full name:</label>
+            <input type="text" id="full_name" name="full_name" required><br>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br>
+
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required><br>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</body>
+</html>
