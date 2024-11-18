@@ -61,3 +61,5 @@ class CommentListAPIView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         car_id = self.kwargs['pk']
         serializer.save(author=self.request.user, car_id=car_id)
+
+
