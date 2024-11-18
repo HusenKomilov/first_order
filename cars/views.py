@@ -1,6 +1,4 @@
-from rest_framework import generics, permissions, status
-from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
-from rest_framework.response import Response
+from rest_framework import generics, permissions
 
 from cars.models import Car, Comment
 from .permissions import IsAuthorOrReadOnly
@@ -61,5 +59,3 @@ class CommentListAPIView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         car_id = self.kwargs['pk']
         serializer.save(author=self.request.user, car_id=car_id)
-
-
