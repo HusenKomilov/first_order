@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from users.models import User
 from utils.models import BaseModel
@@ -10,6 +11,9 @@ class Car(BaseModel):
     year = models.IntegerField()
     description = models.TextField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def get_absolute_url(self):
+        return reverse('cars_retrieve', kwargs={'pk': self.id})
 
     def __str__(self):
         return f"{self.make} {self.model} ({self.year})"

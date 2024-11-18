@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.contrib.auth import logout
+from django.shortcuts import render, redirect
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,8 +25,10 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
-    def get(self, request):
-        return render(request, "login.html")
+    # def get(self, request):
+    #     if request.user.is_authenticated:
+    #         return redirect("cars_list")
+    #     return render(request, "login.html")
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -38,3 +41,8 @@ class LoginView(APIView):
                 "full_name": user.full_name
             })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def user_logout(request):
+    logout(request)
+    return redirect("cars_list")
