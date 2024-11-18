@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                username: formData.get('full_name'),
+                password: formData.get('password'),
+            };
+
+            try {
+                const response = await fetch('/user/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    localStorage.setItem('access', result.access);
+                    localStorage.setItem('refresh', result.refresh);
+                    window.location.href = '/api/car/';
+                } else {
+                    const errorData = await response.json();
+                    document.getElementById('error-message').textContent = errorData.detail || 'Login xato.';
+                }
+            } catch (error) {
+                document.getElementById('error-message').textContent = 'Serverga ulanishda xato yuz berdi.';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="login-form" action="{% url 'login' %}" method="POST" onsubmit="handleLogin(event)">
+        {% csrf_token %}
+        <label for="full_name">Foydalanuvchi nomi:</label>
+        <input type="text" id="full_name" name="full_name" required><br><br>
+
+        <label for="password">Parol:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <button type="submit">Kirish</button>
+    </form>
+
+    <p id="error-message" style="color: #ff0000;"></p>
+</body>
+</html>

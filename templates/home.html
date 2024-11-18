@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Cars List</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Make</th>
+        <th>Model</th>
+        <th>Year</th>
+        <th>Description</th>
+        <th>Owner</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for car in cars %}
+        <tr>
+            <td>{{ car.id }}</td>
+            <td>{{ car.make }}</td>
+            <td>{{ car.model }}</td>
+            <td>{{ car.year }}</td>
+            <td>{{ car.description }}</td>
+            <td>{{ car.owner.full_name }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% if success %}
+    <p style="color: green;">Car successfully added!</p>
+{% endif %}
+
+<!-- Xatolik xabarlari -->
+{% if errors %}
+    <p style="color: red;">Please fix the following errors:</p>
+    <ul>
+        {% for field, error_list in errors.items %}
+            <li>{{ field }}: {{ error_list|join:", " }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% if request.user.is_authentication %}
+    <!-- POST forma -->
+    <h2>Add a new car</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+        <label for="model">Model:</label>
+        <input type="text" id="model" name="model" required><br>
+        <label for="year">Year:</label>
+        <input type="number" id="year" name="year" required><br>
+        <button type="submit">Add Car</button>
+    </form>
+    <li class="header_nav-item"><a class="header_nav-link" href="">EXIT</a></li>
+
+{% else %}
+    <li class="header_nav-item"><a class="header_nav-link"
+                                   href="{% url 'register' %}">SIGN UP</a></li>
+    <li class="header_nav-item"><a class="header_nav-link"
+                               href="{% url 'login' %}">LOGIN</a></li>
+
+{% endif %}
+</body>
+</html>
