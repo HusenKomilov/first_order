@@ -8,6 +8,7 @@ from .serializers import CarSerializer, CommentSerializer
 class CarListAPIView(generics.ListCreateAPIView):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class CarRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
