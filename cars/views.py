@@ -8,6 +8,10 @@ from .serializers import CarSerializer, CommentSerializer
 
 
 class CarListAPIView(generics.ListCreateAPIView):
+    """
+    Класс для получения списка машин и создания новой машины.
+    Это комбинированный API, который обрабатывает запросы GET и POST.
+    """
     queryset = Car.objects.all()
     serializer_class = CarSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -15,6 +19,10 @@ class CarListAPIView(generics.ListCreateAPIView):
     template_name = 'home.html'
 
     def get(self, request, *args, **kwargs):
+        """
+        Метод GET для получения списка машин.
+        В зависимости от типа контента (HTML или JSON) возвращаем соответствующий ответ.
+        """
         queryset = self.get_queryset()
 
         if request.accepted_renderer.format == 'html':
@@ -23,6 +31,10 @@ class CarListAPIView(generics.ListCreateAPIView):
         return Response(self.get_serializer(queryset, many=True).data)
 
     def post(self, request, *args, **kwargs):
+        """
+        Метод POST для создания новой машины.
+        Принимает данные, валидирует и сохраняет новую машину в базе данных.
+        """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -38,27 +50,44 @@ class CarListAPIView(generics.ListCreateAPIView):
 
 
 class CarRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Класс для получения, обновления или удаления конкретной машины.
+    Используется для обработки запросов GET, PUT и DELETE.
+    """
     queryset = Car.objects.all()
     serializer_class = CarSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     http_method_names = ["get", "delete", "put"]
 
     def perform_create(self, serializer):
+        """
+         Метод для сохранения владельца машины при создании.
+         """
         serializer.save(owner=self.request.user)
 
 
 class CommentListAPIView(generics.ListCreateAPIView):
+    """
+    Класс для получения списка комментариев и создания нового комментария для конкретной машины.
+    Это комбинированный API, который обрабатывает запросы GET и POST.
+    """
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
+        """
+        Метод для получения списка комментариев для конкретной машины.
+        """
         if getattr(self, 'swagger_fake_view', False):
             return Comment.objects.none()
         car_id = self.kwargs['pk']
         return Comment.objects.filter(car=car_id)
 
     def perform_create(self, serializer):
+        """
+        Метод для сохранения комментария, добавляя автора и машину, к которой он относится.
+        """
         car_id = self.kwargs['pk']
         serializer.save(author=self.request.user, car_id=car_id)
 

@@ -5,6 +5,10 @@ from .managers import UserManager
 
 
 class User(AbstractUser):
+    """
+    Кастомизированная модель пользователя, которая наследует от AbstractUser.
+    Используется для создания пользователя с дополнительными полями.
+    """
     username = None
     full_name = models.CharField(max_length=256, unique=True)
 
