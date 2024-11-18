@@ -27,7 +27,6 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @csrf_exempt
 class LoginView(APIView):
     def get(self, request):
         if request.user.is_authenticated:
