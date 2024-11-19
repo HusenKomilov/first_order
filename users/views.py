@@ -56,8 +56,9 @@ class LoginView(APIView):
             login(request, user)  # Вход пользователя в систему
             return redirect("cars_list")
 
+
         # Если данные некорректны, возвращается ошибка с описанием.
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return redirect("login")
 
 
 def user_logout(request):

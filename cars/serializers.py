@@ -9,6 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     Сериализатор для модели пользователя.
     Этот сериализатор конвертирует данные модели User в формат, который можно передать через API.
     """
+
     class Meta:
         model = User
         fields = ("id", "full_name")
@@ -37,3 +38,9 @@ class CarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
         fields = ("id", "make", "model", "year", "description", "owner", "comment")
+
+    def create(self, validated_data):
+        # Automatically set the owner as the logged-in user
+        user = self.context['request'].user
+        validated_data['owner'] = user
+        return super().create(validated_data)

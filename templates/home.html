@@ -105,6 +105,15 @@
             margin-bottom: 15px;
         }
 
+        form textarea[type="text"] {
+            width: 100%;
+            height: 10em;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
         form button {
             display: inline-block;
             padding: 12px 20px;
@@ -151,59 +160,61 @@
     </style>
 </head>
 <body>
-    <h1>Cars List</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Make</th>
-                <th>Model</th>
-                <th>Year</th>
-                <th>Description</th>
-                <th>Owner</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for car in cars %}
-                <tr>
-                    <td><a href="{{ car.get_absolute_url }}">{{ car.make }}</a></td>
-                    <td>{{ car.model }}</td>
-                    <td>{{ car.year }}</td>
-                    <td>{{ car.description }}</td>
-                    <td>{{ car.owner.full_name }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<h1>Cars List</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Make</th>
+        <th>Model</th>
+        <th>Year</th>
+        <th>Description</th>
+        <th>Owner</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for car in cars %}
+        <tr>
+            <td><a href="{{ car.get_absolute_url }}">{{ car.make }}</a></td>
+            <td>{{ car.model }}</td>
+            <td>{{ car.year }}</td>
+            <td>{{ car.description }}</td>
+            <td>{{ car.owner.full_name }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
-    {% if success %}
-        <p class="success">Car successfully added!</p>
-    {% endif %}
+{% if success %}
+    <p class="success">Car successfully added!</p>
+{% endif %}
 
-    {% if errors %}
-        <p class="error">Please fix the following errors:</p>
-        <ul>
-            {% for field, error_list in errors.items %}
-                <li>{{ field }}: {{ error_list|join:", " }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+{% if errors %}
+    <p class="error">Please fix the following errors:</p>
+    <ul>
+        {% for field, error_list in errors.items %}
+            <li>{{ field }}: {{ error_list|join:", " }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
-    {% if request.user.is_authenticated %}
-        <h2>Add a new car</h2>
-        <form method="post">
-            {% csrf_token %}
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required><br>
-            <label for="model">Model:</label>
-            <input type="text" id="model" name="model" required><br>
-            <label for="year">Year:</label>
-            <input type="number" id="year" name="year" required><br>
-            <button type="submit">Add Car</button>
-        </form>
-        <li class="header_nav-item"><a class="header_nav-link" href="{% url 'logout' %}">EXIT</a></li>
-    {% else %}
-        <li class="header_nav-item"><a class="header_nav-link" href="{% url 'register' %}">SIGN UP</a></li>
-        <li class="header_nav-item"><a class="header_nav-link" href="{% url 'login' %}">LOGIN</a></li>
-    {% endif %}
+{% if request.user.is_authenticated %}
+    <h2>Add a new car</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="make">Make:</label>
+        <input type="text" id="make" name="make" required><br>
+        <label for="model">Model:</label>
+        <input type="text" id="model" name="model" required><br>
+        <label for="year">Year:</label>
+        <input type="number" id="year" name="year" required max="2025"><br>
+        <label for="description">Description:</label>
+        <textarea type="text" id="description" name="description" required></textarea><br>
+        <button type="submit">Add Car</button>
+    </form>
+    <li class="header_nav-item"><a class="header_nav-link" href="{% url 'logout' %}">EXIT</a></li>
+{% else %}
+    <li class="header_nav-item"><a class="header_nav-link" href="{% url 'register' %}">SIGN UP</a></li>
+    <li class="header_nav-item"><a class="header_nav-link" href="{% url 'login' %}">LOGIN</a></li>
+{% endif %}
 </body>
 </html>

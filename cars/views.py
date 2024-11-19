@@ -35,6 +35,9 @@ class CarListAPIView(generics.ListCreateAPIView):
         Метод POST для создания новой машины.
         Принимает данные, валидирует и сохраняет новую машину в базе данных.
         """
+        data = request.data.copy()
+        data['owner'] = request.user.id
+
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -90,5 +93,3 @@ class CommentListAPIView(generics.ListCreateAPIView):
         """
         car_id = self.kwargs['pk']
         serializer.save(author=self.request.user, car_id=car_id)
-
-
