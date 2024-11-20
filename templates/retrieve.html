@@ -1,22 +1,102 @@
+<!-- templates/car/retrieve.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
 </head>
 <body>
-    <h1>Car Details</h1>
+<h1>Car Details</h1>
 
-    <div>
-        <strong>Car Make:</strong> {{ car.make }}<br>
-        <strong>Car Model:</strong> {{ car.model }}<br>
-        <strong>Car Model:</strong> {{ car.model }}<br>
-        <strong>Car Owner:</strong> {{ car.owner.username }}<br>
-        <strong>Car Year:</strong> {{ car.year }}<br>
-        <strong>Car <description></description>:</strong> {{ car.description }}<br>
-    </div>
+<div id="car-details">
+    <p><strong>Make:</strong> <span id="make">{{ car.make }}</span></p>
+    <p><strong>Model:</strong> <span id="model">{{ car.model }}</span></p>
+    <p><strong>Year:</strong> <span id="year">{{ car.year }}</span></p>
+    <p><strong>Owner:</strong> <span id="owner">{{ car.owner.username }}</span></p>
+</div>
 
+<h2>Edit Car</h2>
+<form id="edit-car-form" method="POST">
+    {% csrf_token %}
+    <label for="edit-make">Make:</label>
+    <input type="text" id="edit-make" name="make" value="{{ car.make }}" required>
+    <br>
+    <label for="edit-model">Model:</label>
+    <input type="text" id="edit-model" name="model" value="{{ car.model }}" required>
+    <br>
+    <label for="edit-year">Year:</label>
+    <input type="number" id="edit-year" name="year" value="{{ car.year }}" required>
+    <br>
+    <button type="button" id="update-car">Save Changes</button>
+</form>
 
+<h2>Actions</h2>
+<button id="delete-car">Delete Car</button>
+
+<script>
+    $(document).ready(function () {
+        const carId = "{{ car.id }}"; // Get the car ID from the template
+        const carUrl = `/api/cars/${carId}/`; // Correct URL format
+
+        // AJAX GET to retrieve car details
+        $.ajax({
+            url: carUrl,  // This should only be "/api/cars/1/"
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Handle the data
+            },
+            error: function () {
+                alert("Failed to load car details.");
+            }
+        });
+
+        $.ajax({
+            url: carUrl,  // This should be the correct endpoint: /api/cars/1/
+            method: 'PUT',
+            data: {
+                make: $('#edit-make').val(),
+                model: $('#edit-model').val(),
+                year: $('#edit-year').val()
+            },
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                alert("Car details updated successfully.");
+            },
+            error: function () {
+                alert("Failed to update car details.");
+            }
+        });
+
+        $('#delete-car').click(function () {
+            if (confirm("Are you sure you want to delete this car?")) {
+                $.ajax({
+                    url: carUrl,  // The correct endpoint for DELETE: /api/cars/2/
+                    method: 'DELETE',
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token
+                    },
+                    success: function (response) {
+                        // Display a success message
+                        alert(response.message || "Car deleted successfully.");
+
+                        // Redirect the user to the cars list page after deletion
+                        window.location.href = 'api/cars/';  // Redirect to the list page, adjust the URL as necessary
+                    },
+                    error: function () {
+                        alert("Failed to delete car.");
+                    }
+                });
+            }
+        });
+
+        getCarDetails();
+    });
+</script>
 </body>
 </html>

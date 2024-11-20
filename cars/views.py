@@ -1,6 +1,8 @@
 from rest_framework import generics, permissions, status
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
+from django.http import JsonResponse
+from django.shortcuts import render
 
 from cars.models import Car, Comment
 from .permissions import IsAuthorOrReadOnly
@@ -53,20 +55,48 @@ class CarListAPIView(generics.ListCreateAPIView):
 
 
 class CarRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Класс для получения, обновления или удаления конкретной машины.
-    Используется для обработки запросов GET, PUT и DELETE.
-    """
     queryset = Car.objects.all()
     serializer_class = CarSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     http_method_names = ["get", "delete", "put"]
 
-    def perform_create(self, serializer):
-        """
-         Метод для сохранения владельца машины при создании.
-         """
-        serializer.save(owner=self.request.user)
+    def get(self, request, *args, **kwargs):
+        # Check if the request is an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            car = self.get_object()
+            serializer = self.get_serializer(car)
+            return JsonResponse(serializer.data)
+        else:
+            car = self.get_object()
+            context = {'car': car}
+            return render(request, 'retrieve.html', context)
+
+    def put(self, request, *args, **kwargs):
+        # Update car details via AJAX (PUT request)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            car = self.get_object()
+            data = request.data
+            serializer = self.get_serializer(car, data=data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data)
+            return JsonResponse({"error": "Invalid data"}, status=400)
+        return super().put(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        # Delete car via AJAX (DELETE request)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            car = self.get_object()
+            car.delete()
+
+            return JsonResponse({"message": "Car deleted successfully"})
+        return super().delete(request, *args, **kwargs)
+    # def perform_create(self, serializer):
+    #     """
+    #      Метод для сохранения владельца машины при создании.
+    #      """
+    #     serializer.save(owner=self.request.user)
+    #
 
 
 class CommentListAPIView(generics.ListCreateAPIView):
